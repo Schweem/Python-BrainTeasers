@@ -30,7 +30,11 @@ def smooth(t : float):
 	Applies a quintic smoothing curve (6t^5 - 15t^4 + 10t^3)
 	to passed value t (fraction)
 	"""
-	return t * t * t * (t * (t * 6 - 15) + 10)
+	try:
+		return t * t * t * (t * (t * 6 - 15) + 10)
+	
+	except Exception as e:
+		print(f"Error: {e}")
 
 def get_gradient_1d(i, perm_table : list):
 	"""
