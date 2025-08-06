@@ -1,5 +1,7 @@
 import random 
 from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
 
 def generate_permutation_table(seed=None) -> list:
 	"""
@@ -196,9 +198,98 @@ def visualize_2d_noise(WIDTH : int, HEIGHT : int):
 	except Exception as e:
 		print(f"Error: {e}")
 
+def fractal_noise_2d(x, y, perm_table, octaves=4, persistence=0.5):
+	"""
+	Generates fractal noise by adding multiple octaves of Perlin noise.
+	"""
+	total = 0.0
+	frequency = 1.0
+	amplitude = 1.0
+	
+	for i in range(octaves):
+		total += generate_2d_noise(x * frequency, y * frequency, perm_table) * amplitude
+		
+		# For the next octave, increase frequency and decrease amplitude
+		amplitude *= persistence
+		frequency *= 2
+		
+	return total
+
+def pretty_2d_noise(WIDTH : int, HEIGHT : int):
+	"""
+	Generate 2D perlin noise, store as PNG with Pillow
+	"""
+	try:
+		PERMUTATION_TABLE = generate_permutation_table(seed=20)
+
+		image = Image.new('RGB', (WIDTH, HEIGHT))
+
+		pixel_data = []
+
+		for y in range(HEIGHT):
+			for x in range(WIDTH):
+				# scalars on x and y change 'zoom'  
+				noise_value = fractal_noise_2d(x * 0.05, y * 0.05, PERMUTATION_TABLE)
+				normalized_val = (noise_value + 1.5) / 3.0
+				elevation = int((normalized_val + 1) * 50)
+				
+
+				pixel_color = (elevation, elevation, elevation)
+
+				pixel_data.append(pixel_color)
+
+		image.putdata(pixel_data)
+		image.save('perlin2d.png')
+
+		print("Noise saved as perlin2d.png!")
+		
+	except Exception as e:
+		print(f"Error: {e}")
+
+def numpy_2d_noise(WIDTH : int, HEIGHT : int):
+	"""
+	Generate 2D Perlin noise and render a contour plot with Matplotlib.
+	"""
+	try:
+		PERMUTATION_TABLE = generate_permutation_table(seed=20)
+		noise_grid = np.zeros((HEIGHT, WIDTH))
+
+		for y in range(HEIGHT):
+			for x in range(WIDTH):
+				# scalars on x and y change 'zoom'  
+				noise_value = fractal_noise_2d(x * 0.05, y * 0.05, PERMUTATION_TABLE)
+				noise_grid[y, x] = noise_value
+
+
+		levels = 15
+		line_widths = [0.5, 1.0, 1.5, 2.0]
+		colors = ['turquoise', 'aqua']
+		
+		fig, ax = plt.subplots(figsize=(10, 10), facecolor='darkslategrey')
+
+		ax.contour(noise_grid,
+				   levels=levels,
+				   colors=colors,
+				   linewidths=line_widths,
+				   linestyles=['solid'])
+
+		ax.set_axis_off()
+		plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+		ax.margins(0, 0)
+
+		print("Contour plot ready")
+		plt.show()
+		
+	except NameError:
+		 print("Error: Make sure 'fractal_noise_2d' and 'PERMUTATION_TABLE' are defined.")
+	except Exception as e:
+		print(f"Error: {e}")
+
 def main() -> None:
 	#visualize_1d_noise()
-	visualize_2d_noise(1080, 1920)
+	#visualize_2d_noise(1080, 1920)
+	#pretty_2d_noise(1080, 1920)
+	numpy_2d_noise(100, 100)
 
 if __name__ == "__main__":
 	main()
