@@ -186,7 +186,6 @@ def visualize_2d_noise(WIDTH : int, HEIGHT : int):
 				# scalars on x and y change 'zoom'  
 				noise_value = generate_2d_noise(x * 0.05, y * 0.05, PERMUTATION_TABLE)
 
-				#define colors for rendering
 				color = int((noise_value + 0.7) * 182)
 				pixel_data.append(color)
 
@@ -263,15 +262,19 @@ def numpy_2d_noise(WIDTH : int, HEIGHT : int):
 
 		levels = 15
 		line_widths = [0.5, 1.0, 1.5, 2.0]
-		colors = ['turquoise', 'aqua']
+		colors = ['darkgreen', 'teal']
+		#https://matplotlib.org/stable/gallery/color/named_colors.html
 		
-		fig, ax = plt.subplots(figsize=(10, 10), facecolor='darkslategrey')
+		fig, ax = plt.subplots(figsize=(10, 10), facecolor='black')
+
+		ax.contourf(noise_grid, levels=levels, cmap='gist_earth')
+		#https://matplotlib.org/stable/users/explain/colors/colormaps.html
 
 		ax.contour(noise_grid,
 				   levels=levels,
 				   colors=colors,
 				   linewidths=line_widths,
-				   linestyles=['solid'])
+				   linestyles=['solid']) #https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html
 
 		ax.set_axis_off()
 		plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
